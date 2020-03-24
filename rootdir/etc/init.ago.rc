@@ -1,0 +1,17 @@
+service vendor.zram_init /vendor/bin/tplink_zram.sh 0
+    oneshot
+    disabled
+    seclabel u:r:shell:s0
+
+service vendor.zram_para_init /vendor/bin/tplink_zram.sh 1
+    oneshot
+    disabled
+    seclabel u:r:shell:s0
+
+on init
+    start vendor.zram_init
+
+on post-fs
+    write /proc/sys/vm/page-cluster 0
+    swapon_all /vendor/etc/fstab.enableswap
+    start vendor.zram_para_init
